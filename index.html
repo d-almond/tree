@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Galería — Minimal Landing</title>
+  <meta name="description" content="Landing minimalista tipo galería de imágenes. Diseño moderno, limpio y responsive." />
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --fg: #e9e9ec;
+      --muted: #9a9aa3;
+      --card: #141416;
+      --accent: #6e7bff;
+      --radius: 18px;
+      --gap: clamp(10px, 2vw, 18px);
+      --maxw: min(1200px, 92vw);
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg:#ffffff; --fg:#0e0e12; --muted:#626270; --card:#f4f5f7; }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    /* Header */
+    header {
+      max-width: var(--maxw);
+      margin: 24px auto 8px;
+      padding: 0 var(--gap);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--gap);
+    }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #00e0aa);
+      box-shadow: 0 6px 18px rgba(0,0,0,.25), inset 0 0 24px rgba(255,255,255,.15);
+    }
+    h1 { font-size: clamp(20px, 2.4vw, 28px); margin: 0; font-weight: 650; letter-spacing: .4px; }
+    .tagline { color: var(--muted); font-size: .95rem; margin: 6px 0 0; }
+
+    /* Hero */
+    .hero { max-width: var(--maxw); margin: 10px auto 18px; padding: 0 var(--gap); }
+    .hero .cta {
+      display:flex; gap:10px; margin-top: 14px; flex-wrap: wrap;
+    }
+    .btn {
+      appearance: none; border: 0; cursor: pointer; text-decoration: none; color: #fff;
+      padding: 10px 14px; border-radius: 999px; background: var(--accent); font-weight: 600;
+      box-shadow: 0 8px 24px rgba(110,123,255,.35);
+    }
+    .btn.ghost { background: transparent; color: var(--fg); border: 1px solid color-mix(in oklab, var(--fg) 18%, transparent); box-shadow: none; }
+
+    /* Grid */
+    .grid {
+      max-width: var(--maxw);
+      margin: 18px auto 60px;
+      padding: 0 var(--gap);
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--gap);
+    }
+
+    .card {
+      grid-column: span 4;
+      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 96%, transparent), var(--card));
+      border-radius: var(--radius);
+      overflow: clip;
+      position: relative;
+      transition: transform .35s ease, box-shadow .35s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.28);
+      aspect-ratio: 4 / 5;
+      display:flex; align-items: stretch; justify-content: stretch;
+    }
+
+    .card:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,.35); }
+
+    .card a { display:block; width:100%; height:100%; position:relative; }
+    .card img {
+      width: 100%; height: 100%; object-fit: cover; display:block; filter: saturate(1.05) contrast(1.02);
+      transition: transform .5s ease;
+    }
+    .card:hover img { transform: scale(1.03); }
+
+    .label {
+      position: absolute; left: 10px; bottom: 10px; padding: 8px 10px; border-radius: 12px;
+      background: rgba(10,10,12,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      color: #fff; font-weight: 600; font-size: .85rem;
+    }
+
+    /* Responsive spans for variety */
+    .wide { grid-column: span 6; aspect-ratio: 16 / 10; }
+    .tall { grid-column: span 3; aspect-ratio: 3 / 5; }
+
+    @media (max-width: 1024px) {
+      .card { grid-column: span 6; }
+      .wide { grid-column: span 12; }
+      .tall { grid-column: span 6; }
+    }
+    @media (max-width: 640px) {
+      .card, .wide, .tall { grid-column: span 12; }
+    }
+
+    /* CSS-only Lightbox via :target */
+    .lightbox-overlay {
+      position: fixed; inset: 0; background: color-mix(in oklab, var(--bg) 75%, black);
+      display: none; align-items: center; justify-content: center; padding: 4vw; z-index: 50;
+    }
+    .lightbox-overlay:target { display: flex; }
+    .lightbox {
+      width: min(1200px, 96vw); height: min(86vh, 900px); background: #000; border-radius: 16px;
+      overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .lightbox img { width: 100%; height: 100%; object-fit: contain; background:#000; }
+    .close {
+      position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 999px;
+      background: rgba(255,255,255,.08); display:grid; place-items:center; text-decoration:none; color:#fff; font-weight:700;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+
+    /* Footer */
+    footer { max-width: var(--maxw); margin: 0 auto 48px; padding: 0 var(--gap); color: var(--muted); }
+    .credits { display:flex; justify-content: space-between; flex-wrap:wrap; gap:10px; font-size: .92rem; }
+    .credits a { color: inherit; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Minimal Gallery</h1>
+        <p class="tagline">Landing de imágenes — limpio, elegante, rápido.</p>
+      </div>
+    </a>
+    <nav class="cta">
+      <a class="btn" href="#">Contacto</a>
+      <a class="btn ghost" href="#">Sobre</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="tagline">Sustituye las URLs por tus imágenes. Haz clic para ver a pantalla completa.</p>
+  </section>
+
+  <main class="grid">
+    <!-- Card template: change href and img src; label is optional -->
+    <figure class="card wide">
+      <a href="#img1"><img loading="lazy" src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=1600&auto=format&fit=crop" alt="Arquitectura minimalista" /></a>
+      <figcaption class="label">Arquitectura</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img2"><img loading="lazy" src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop" alt="Naturaleza en detalle" /></a>
+      <figcaption class="label">Naturaleza</figcaption>
+    </figure>
+
+    <figure class="card tall">
+      <a href="#img3"><img loading="lazy" src="https://images.unsplash.com/photo-1526481280698-8fcc13fd1b98?q=80&w=900&auto=format&fit=crop" alt="Retrato monocromo" /></a>
+      <figcaption class="label">Retrato</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img4"><img loading="lazy" src="https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?q=80&w=1200&auto=format&fit=crop" alt="Producto minimal" /></a>
+      <figcaption class="label">Producto</figcaption>
+    </figure>
+
+    <figure class="card wide">
+      <a href="#img5"><img loading="lazy" src="https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?q=80&w=1600&auto=format&fit=crop" alt="Interiores modernos" /></a>
+      <figcaption class="label">Interiores</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img6"><img loading="lazy" src="https://images.unsplash.com/photo-1499084732479-de2c02d45fc4?q=80&w=1200&auto=format&fit=crop" alt="Editorial de moda" /></a>
+      <figcaption class="label">Moda</figcaption>
+    </figure>
+
+    <figure class="card tall">
+      <a href="#img7"><img loading="lazy" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=900&auto=format&fit=crop" alt="Diseño gráfico" /></a>
+      <figcaption class="label">Diseño</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img8"><img loading="lazy" src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop" alt="Tecnología" /></a>
+      <figcaption class="label">Tech</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img9"><img loading="lazy" src="https://images.unsplash.com/photo-1496483648148-47c686dc86a8?q=80&w=1200&auto=format&fit=crop" alt="Arte abstracto" /></a>
+      <figcaption class="label">Arte</figcaption>
+    </figure>
+
+    <figure class="card wide">
+      <a href="#img10"><img loading="lazy" src="https://images.unsplash.com/photo-1520975693416-35a9fa3036e8?q=80&w=1600&auto=format&fit=crop" alt="Paisaje urbano nocturno" /></a>
+      <figcaption class="label">Urbano</figcaption>
+    </figure>
+
+    <figure class="card">
+      <a href="#img11"><img loading="lazy" src="https://images.unsplash.com/photo-1526178612061-c35d7e31f672?q=80&w=1200&auto=format&fit=crop" alt="Gastronomía minimal" /></a>
+      <figcaption class="label">Food</figcaption>
+    </figure>
+
+    <figure class="card tall">
+      <a href="#img12"><img loading="lazy" src="https://images.unsplash.com/photo-1520974722061-866e33cf0e3b?q=80&w=900&auto=format&fit=crop" alt="Arquitectura brutalista" /></a>
+      <figcaption class="label">Brutalista</figcaption>
+    </figure>
+  </main>
+
+  <!-- Lightbox targets (CSS-only) -->
+  <div id="img1" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#" aria-label="Cerrar">×</a><img src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=2000&auto=format&fit=crop" alt="Arquitectura" /></figure></div>
+  <div id="img2" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop" alt="Naturaleza" /></figure></div>
+  <div id="img3" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1526481280698-8fcc13fd1b98?q=80&w=1600&auto=format&fit=crop" alt="Retrato" /></figure></div>
+  <div id="img4" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?q=80&w=2000&auto=format&fit=crop" alt="Producto" /></figure></div>
+  <div id="img5" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?q=80&w=2400&auto=format&fit=crop" alt="Interiores" /></figure></div>
+  <div id="img6" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1499084732479-de2c02d45fc4?q=80&w=2000&auto=format&fit=crop" alt="Moda" /></figure></div>
+  <div id="img7" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1800&auto=format&fit=crop" alt="Diseño" /></figure></div>
+  <div id="img8" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=2000&auto=format&fit=crop" alt="Tech" /></figure></div>
+  <div id="img9" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1496483648148-47c686dc86a8?q=80&w=2000&auto=format&fit=crop" alt="Arte" /></figure></div>
+  <div id="img10" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1520975693416-35a9fa3036e8?q=80&w=2400&auto=format&fit=crop" alt="Urbano" /></figure></div>
+  <div id="img11" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1526178612061-c35d7e31f672?q=80&w=2000&auto=format&fit=crop" alt="Food" /></figure></div>
+  <div id="img12" class="lightbox-overlay"><figure class="lightbox"><a class="close" href="#">×</a><img src="https://images.unsplash.com/photo-1520974722061-866e33cf0e3b?q=80&w=1800&auto=format&fit=crop" alt="Brutalista" /></figure></div>
+
+  <footer>
+    <div class="credits">
+      <span>© 2025 — Minimal Gallery</span>
+      <span>Hecho con HTML + CSS (sin JS). Imágenes: Unsplash</span>
+    </div>
+  </footer>
+</body>
+</html>
